@@ -4,13 +4,22 @@ import './Home.css'
 function Home(){
     const [socket,setSocket] = useState(null)
     const [text,setText] = useState('')
+    const [mySocketId,setMySocketId] = useState(null)
+    const [socketOtherEnd,setSocketOtherend] = useState(null)
     const [msgScreen,setMsgScreen] = useState(false)
     const [username,setUsername] = useState('')
-    const [messages,setMessages] = useState([{uname:'user1',msg:'first message'},
-    {uname:'user2',msg:'second message'},
-    {uname:'user1',msg:'third message'}])
+    const [messages,setMessages] = useState([])
+    const [state,setState] = ('wait')
     useEffect(()=>{
         const newSocket = io('http://localhost:5000');
+        newSocket.on('connect', () => {
+            console.log('Socket ID:', newSocket.id);
+            setMySocketId(newSocket.id)
+        });
+        newSocket.on('pair',(id)=>{
+            console.log(`paired with ${id}`);
+            setSocketOtherend(id)
+        })
         newSocket.on('recieveMessage',(data)=>{
             setMessages(prev=>[...prev,data])
         })
@@ -21,11 +30,12 @@ function Home(){
 
     },[])
     const clickContinue = ()=>{
+        socket.emit('registeruser',{socket:mySocketId,username:username})
         setMsgScreen(true)
     }
    
     const clickSend = ()=>{
-        socket.emit('newmessage',{username:username,message:text})
+        socket.to(socketOtherEnd).emit('newmessage',{username:username,message:text})
         setText('')
     }
     return(
