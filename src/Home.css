@@ -1,0 +1,34 @@
+.main-div {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end; 
+  align-items: center; 
+  height: 95vh; 
+}
+.msg-display{
+  background-color:aliceblue ;
+}
+.msg-container{
+  margin: 2px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+  background-color: aquamarine;
+  padding: 3px 8px;
+}
+.msg-uname{
+  font-size: smaller;
+  font-weight: 500;
+}
+.msg-msg{
+  font-weight: lighter;
+}
+.start-screen{
+  display: flex;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+}
+.start-contents{
+  color: blueviolet;
+}
