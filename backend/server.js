@@ -8,7 +8,6 @@ var io = require('socket.io')(server, {
       origin: '*',
     }
 });
-// const io = socketIO(server)
 const PORT = 5000
 var activeconnections = []
 var waitlist = []
@@ -17,6 +16,7 @@ io.on('connection',async(socket)=>{
     if(waitlist.length > 0){
         waitlist[waitlist.length -1]
         await socket.emit('pair',waitlist[waitlist.length -1])
+        await io.to(waitlist[waitlist.length -1]).emit('pair',socket.id)
         waitlist.splice(waitlist[waitlist.length -1],1)
     }else{
         waitlist.push(socket.id)
@@ -26,14 +26,13 @@ io.on('connection',async(socket)=>{
         activeconnections = activeconnections.filter(conn => conn.socket !== socket.id); 
         waitlist = waitlist.filter(id => id !== socket.id);
     });
-    // socket.to(socket.id).emit('socketdata')
     socket.on('registeruser',(data)=>{
         activeconnections.push(data)
         console.log(activeconnections);
     })
     socket.on('newmessage',async (message)=>{
         console.log(`event newmessage ${message.username}  ${message.message}`);
-        await io.emit('recieveMessage',{uname:message.username,msg:message.message})
+        await io.to(message.to).emit('recieveMessage',{uname:message.username,msg:message.message})
     })
 })
 

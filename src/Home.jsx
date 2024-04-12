@@ -9,7 +9,7 @@ function Home(){
     const [msgScreen,setMsgScreen] = useState(false)
     const [username,setUsername] = useState('')
     const [messages,setMessages] = useState([])
-    const [state,setState] = ('wait')
+    const [state,setState] = useState('wait')
     useEffect(()=>{
         const newSocket = io('http://localhost:5000');
         newSocket.on('connect', () => {
@@ -19,6 +19,7 @@ function Home(){
         newSocket.on('pair',(id)=>{
             console.log(`paired with ${id}`);
             setSocketOtherend(id)
+            setState('connected')
         })
         newSocket.on('recieveMessage',(data)=>{
             setMessages(prev=>[...prev,data])
@@ -35,13 +36,15 @@ function Home(){
     }
    
     const clickSend = ()=>{
-        socket.to(socketOtherEnd).emit('newmessage',{username:username,message:text})
+        socket.emit('newmessage',{username:username,message:text,to:socketOtherEnd})
+        setMessages(prev=>[...prev,{uname:username,msg:text}])
         setText('')
     }
     return(
         <>
         {msgScreen ?
         <div className='main-div'>
+            
             <div className='msg-display'>
             {messages.map((msg,i)=>{
                 return(<div className='msg-container' key={i}>
@@ -55,6 +58,7 @@ function Home(){
             <input type='text' value={text} onChange={(e)=>{setText(e.target.value)}}/>
             <button onClick={clickSend}>Send</button>
             </div> 
+            <span className='msg-state'>You are now in {state} state</span>
         </div>:
         <div className='start-screen'>
             <p>What is your name</p>
