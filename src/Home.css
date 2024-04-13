@@ -36,3 +36,9 @@
 .msg-state{
   margin-top: 10px;
 }
+.msg-notification{
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  color: red;
+  font-weight: 300;
+  display: flex;
+}

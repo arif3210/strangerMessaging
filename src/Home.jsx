@@ -10,28 +10,56 @@ function Home(){
     const [username,setUsername] = useState('')
     const [messages,setMessages] = useState([])
     const [state,setState] = useState('wait')
+    // useEffect(()=>{
+    //     const newSocket = io('http://localhost:5000');
+    //     newSocket.on('connect', () => {
+    //         console.log('Socket ID:', newSocket.id);
+    //         setMySocketId(newSocket.id)
+    //     });
+    //     newSocket.on('pair',(id)=>{
+    //         console.log(`paired with ${id}`);
+    //         setSocketOtherend(id)
+    //         setState('connected')
+    //     })
+    //     newSocket.on('recieveMessage',(data)=>{
+    //         setMessages(prev=>[...prev,data])
+    //     })
+    //     setSocket(newSocket)
+    //     return ()=>{
+    //         newSocket.disconnect()
+    //     }
+
+    // },[])
     useEffect(()=>{
-        const newSocket = io('http://localhost:5000');
-        newSocket.on('connect', () => {
-            console.log('Socket ID:', newSocket.id);
-            setMySocketId(newSocket.id)
+        if(socket){socket.on('connect', () => {
+            console.log('Socket ID:', socket.id);
+            setMySocketId(socket.id)
         });
-        newSocket.on('pair',(id)=>{
+        socket.on('pair',(id)=>{
             console.log(`paired with ${id}`);
             setSocketOtherend(id)
             setState('connected')
         })
-        newSocket.on('recieveMessage',(data)=>{
+        socket.on('unpair',()=>{
+            setMessages([{uname:'',msg:"The user has been disconnected"}])
+            setState('wait')
+            setTimeout(() => {
+                setMessages([])
+            }, 3000);
+            
+        })
+        socket.on('recieveMessage',(data)=>{
             setMessages(prev=>[...prev,data])
         })
-        setSocket(newSocket)
         return ()=>{
-            newSocket.disconnect()
-        }
+            socket.disconnect()
+        }}
 
-    },[])
+    },[socket])
     const clickContinue = ()=>{
-        socket.emit('registeruser',{socket:mySocketId,username:username})
+        const newSocket = io('http://localhost:5000');
+        setSocket(newSocket)
+        newSocket.emit('registeruser',{socket:mySocketId,username:username})
         setMsgScreen(true)
     }
    
